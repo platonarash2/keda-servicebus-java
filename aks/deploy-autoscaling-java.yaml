@@ -1,0 +1,36 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: trigger-auth-service-bus-orders2-java
+spec:
+  secretTargetRef:
+  - parameter: connection
+    name: secrets-order-management-java
+    key: servicebus-order-management-connectionstring
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secrets-order-management-java
+  labels:
+    app: order-java-processor
+data:
+  servicebus-order-management-connectionstring: <root connection string to service bus>
+---
+apiVersion: keda.sh/v1alpha1 
+kind: ScaledObject
+metadata:
+  name: order-java-processor-scaler
+spec:
+  scaleTargetRef:
+    name: order-java-processor
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: azure-servicebus
+    metadata:
+      queueName: orders2
+      messageCount: '5'
+    authenticationRef:
+      name: trigger-auth-service-bus-orders2-java
+      

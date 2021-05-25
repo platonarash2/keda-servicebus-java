@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-java-processor
+  labels:
+    app: order-java-processor
+spec:
+  selector:
+    matchLabels:
+      app: order-java-processor
+  template:
+    metadata:
+      labels:
+        app: order-java-processor
+    spec:
+      containers:
+      - name: order-java-processor
+        image:  <your image>
+        env:
+        - name: KEDA_SERVICEBUS_AUTH_MODE
+          value: ConnectionString
+        - name: KEDA_SERVICEBUS_QUEUE_CONNECTIONSTRING
+          valueFrom:
+            secretKeyRef:
+             name: secrets-order-java-consumer
+             key: servicebus-connectionstring
+        - name: KEDA_SERVICEBUS_QUEUE_NAME
+          value: orders2
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secrets-order-java-consumer
+  labels:
+    app: order-java-processor
+data:
+  servicebus-connectionstring: <Base64 decode connectionstring to servicebus>
