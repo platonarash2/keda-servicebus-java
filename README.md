@@ -1,2 +1,2 @@
 # keda-servicebus-java
-KEDA Service Bus Trigger with Java
+KEDA 2.0 Service Bus Trigger with Java - https://keda.sh/
